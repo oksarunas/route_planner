@@ -39,12 +39,11 @@ def distances(locations):
         for end in locations:
             if start[0] != end[0]:
                 distance = directions([start[1], start[2]], [end[1], end[2]])
-                #a[str(start[0]) + '-' + str(end[0])] =  distance
                 cursor.execute("INSERT INTO distances (start, end, distance) VALUES (?, ?, ?)", (start[0], end[0], distance / 100))
     conn.commit()            
     return 0           
- 
-                
+
+
 cursor.execute("SELECT name, longitude, latitude FROM destinations")
 locations = cursor.fetchall()
 distances(locations)
