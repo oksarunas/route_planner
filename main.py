@@ -49,9 +49,12 @@ def directions(start, end):
     return info['features'][0]['properties']['summary']['distance']
 
 
-# Add distances between locations to database
+# Add missing distances between locations to database
 
-def distances(locations):
+def distances():
+    cursor.execute('SELECT name, longitude, latitude FROM destinations')
+    locations = cursor.fetchall()
+
     for start in locations:
         for end in locations:
             if start[0] != end[0]:  # Avoid same start and end locations
@@ -133,6 +136,8 @@ def calculate(location_list):
     return route, distance
 
 # Test it
-location_list = ['Josvainiai', 'Kunioniai', "Dotnuva", "Paparciai"]
-route, total = calculate(location_list)
-print(f"Full route: {route}, Total distance: {total}")
+#location_list = ['Josvainiai', 'Kunioniai', "Dotnuva", "Paparciai"]
+#route, total = calculate(location_list)
+#print(f"Full route: {route}, Total distance: {total}")
+
+distances()
