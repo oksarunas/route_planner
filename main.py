@@ -92,28 +92,6 @@ def update():
 
 
 
-
-#update()
-#cursor.execute("SELECT name, longitude, latitude FROM destinations")
-#locations = cursor.fetchall()
-#distances(locations)
-
-
-    #Pick a starting point (say, your current location or a fixed spot).
-    #List your points (the locations in your database).
-    #Try all combos—loop through the points, add up distances in different orders, and pick the shortest total. Super brute-force, not fast, but it’ll work for a small set of stops.
-cursor.execute("SELECT name FROM destinations")
-locations = cursor.fetchall()
-
-# Convert list of tuples into a simple list
-#location_list = [location[0] for location in locations]
-cursor.execute("SELECT start, end, distance FROM distances")
-
-
-
-location_distances = cursor.fetchall()
-
-
 def calculate(location_list):
     distance = 0
     route = ['Kaunas']  # Track the full path explicitly
