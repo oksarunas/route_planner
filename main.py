@@ -93,7 +93,68 @@ def update():
 
 
 
-update()
-cursor.execute("SELECT name, longitude, latitude FROM destinations")
+#update()
+#cursor.execute("SELECT name, longitude, latitude FROM destinations")
+#locations = cursor.fetchall()
+#distances(locations)
+
+
+    #Pick a starting point (say, your current location or a fixed spot).
+    #List your points (the locations in your database).
+    #Try all combos—loop through the points, add up distances in different orders, and pick the shortest total. Super brute-force, not fast, but it’ll work for a small set of stops.
+cursor.execute("SELECT name FROM destinations")
 locations = cursor.fetchall()
-distances(locations)
+
+# Convert list of tuples into a simple list
+#location_list = [location[0] for location in locations]
+cursor.execute("SELECT start, end, distance FROM distances")
+
+
+
+location_distances = cursor.fetchall()
+
+
+def calculate(location_list):
+    distance = 0
+    route = ['Kaunas']  # Track the full path explicitly
+    remaining = location_list.copy()  # Work with a copy to preserve input
+    current = 'Kaunas'
+
+    # Visit all points
+    while remaining:
+        distances = []
+        for next_stop in remaining:
+            if next_stop != current:
+                cursor.execute("SELECT start, end, distance FROM distances WHERE start = ? AND end = ?", (current, next_stop))
+                result = cursor.fetchone()
+                if result:  # Check if query returned something
+                    distances.append(result)
+        
+        if not distances:  # No valid next stops
+            print("No distances found—check database!")
+            return None, None
+        
+        # Pick the closest
+        min_distance = min(distances, key=lambda x: x[2])
+        distance += float(min_distance[2])
+        current = min_distance[1]  # Move to the next stop
+        route.append(current)
+        remaining.remove(current)  # Drop it from unvisited list
+        print(f"Step: {current}, Total so far: {distance}")
+
+    # Return to Kaunas
+    cursor.execute("SELECT distance FROM distances WHERE start = ? AND end = ?", (current, 'Kaunas'))
+    last = cursor.fetchone()
+    if last:
+        distance += float(last[0])
+        route.append('Kaunas')
+        print(f"Back to Kaunas, Final distance: {distance}")
+    else:
+        print("No route back to Kaunas—check data!")
+
+    return route, distance
+
+# Test it
+location_list = ['Josvainiai', 'Kunioniai', "Dotnuva", "Paparciai"]
+route, total = calculate(location_list)
+print(f"Full route: {route}, Total distance: {total}")
